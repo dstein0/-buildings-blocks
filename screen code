@@ -1,0 +1,140 @@
+let y =0;
+let img;
+let serial;
+
+
+
+function preload() {
+  img = loadImage('assets/buildings_1.png')
+  img2 = loadImage('assets/buildings_2.png')
+  img3 = loadImage('assets/buildings_3.png')
+  img4 = loadImage('assets/buildings_4.png')
+  myFont = loadFont('assets/Helvetica Neue W01 87 Hv Cn Obl.otf');
+}
+
+
+
+let buildings = "00000000000"
+let locations = [[120,120],[0,240],[240,240],[240,120],[0,0],[360 ,240],[120,240],[360,0],[0 ,240],[0 ,120],[240 ,240],[360 ,240]];
+
+
+function setup() {
+  createCanvas(660, 458);
+
+ serial = new p5.SerialPort();
+
+ serial.list();
+ serial.open('/dev/tty.usbmodem144101');
+
+ serial.on('connected', serverConnected);
+
+ serial.on('list', gotList);
+
+ serial.on('data', gotData);
+
+ serial.on('error', gotError);
+
+ serial.on('open', gotOpen);
+
+ serial.on('close', gotClose);
+
+}
+
+function serverConnected() {
+ print("Connected to Server");
+}
+
+function gotList(thelist) {
+ print("List of Serial Ports:");
+
+ for (let i = 0; i < thelist.length; i++) {
+  print(i + " " + thelist[i]);
+ }
+}
+
+function gotOpen() {
+ print("Serial Port is Open");
+}
+
+function gotClose(){
+ print("Serial Port is Closed");
+ latestData = "Serial Port is Closed";
+}
+
+function gotError(theerror) {
+ print(theerror);
+}
+
+function gotData() {
+ let currentString = serial.readLine();
+  trim(currentString);
+ if (!currentString) return;
+ console.log(currentString);
+ buildings = currentString;
+}
+
+function draw() {  
+  background(255, 255, 255);
+
+  //Grass
+  fill (0,176,164);
+  noStroke();
+  quad(0, 0, 484, 0 ,484, 363, 0, 363);
+  
+ 
+  //buildings
+  var numberbuliding =0;
+   for (let i = 0; i < 12; i++){
+    if (buildings[i] == '1') {
+      numberbuliding += 1;
+      image(img, locations[i][0], locations[i][1], 124,    120)
+ 
+    }  
+  }   
+  for (let i = 0; i < 12; i++){
+    if (buildings[i] == '2') {
+      numberbuliding += 1;
+      image(img2, locations[i][0], locations[i][1], 124,    120)
+    }  
+     }
+            for (let i = 0; i < 12; i++){
+    if (buildings[i] == '3') {
+      numberbuliding += 1;
+      image(img3, locations[i][0], locations[i][1], 124,    120)
+    } 
+               }
+                  for (let i = 0; i < 12; i++){
+    if (buildings[i] == '4') {
+      numberbuliding += 1;
+      image(img4, locations[i][0], locations[i][1], 124,    120)
+    }  
+                  }
+  //air
+   for (let i= 0; i < (12 - numberbuliding ); i++) {
+    y = i * 7;
+    fill (93,185,214);
+    noStroke();
+    quad(100, y + 370, 650, y + 370 , 650, y + 375, 100, y +  375);
+
+    }
+  
+   //Light
+  fill (254,224,205);
+  noStroke();
+  quad(494, 0, 650, 0 ,650, 363, 494, 363);
+  
+  
+  fill (244, 99, 69);
+                
+  ellipse (575, 75 , 120 - (numberbuliding  *10 ) , 120- (numberbuliding*10) )
+  
+  textSize(129);
+  textFont(myFont);
+  fill(93,185,214);
+  textSize(20);
+  text('Air',70, 450);
+  fill(244, 99, 69);
+  textSize(20);
+  text('Light',600, 355);
+
+}
